@@ -1,6 +1,7 @@
 package mvnikitin.javaadvanced.lesson1.marathon;
 
 import mvnikitin.javaadvanced.lesson1.marathon.participants.*;
+import mvnikitin.javaadvanced.lesson1.marathon.obstacles.Obstacle;
 
 public class Team {
 
@@ -20,6 +21,19 @@ public class Team {
 
         // Представляем команду
         info();
+    }
+
+    /**
+     * Метод прохождения препятствия участниками, не соседшими с дистанции.
+     * @param obstacle - Препятствие, которое требуется пройти команде
+     */
+    public void passObstacle(Obstacle obstacle) {
+        for(Competitor member: teamMembers) {
+            if (member.isOnDistance())
+                obstacle.doIt(member);
+        }
+
+        System.out.println();
     }
 
     /**
