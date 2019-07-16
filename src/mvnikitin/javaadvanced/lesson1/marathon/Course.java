@@ -19,7 +19,7 @@ public class Course {
 
     /**
      * Метод старта и прохождения марафона командой.
-     * @param team - команда участников марафона
+     * @param team - команда участников марафона.
      */
     public void doIt(Team team) {
         for(Obstacle o: obstacles) {
