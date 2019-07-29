@@ -1,4 +1,5 @@
-package mvnikitin.netchat;
+package mvnikitin.javaadvanced.netchat;
+
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
