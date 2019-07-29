@@ -1,0 +1,20 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<!--?import javafx.scene.control.TextField?-->
+<?scenebuilder-stylesheet /css/Style.css?>
+<?import java.net.URL?>
+
+
+<VBox fx:controller="mvnikitin.netchat.Controller"
+      xmlns:fx="http://javafx.com/fxml" alignment="center">
+    <stylesheets><URL value="@css/Style.css"/></stylesheets>
+    <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS" wrapText="true"/>
+    <HBox>
+        <!--TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение"/-->
+        <TextArea fx:id="messageTextArea" editable="true" wrapText="true" maxHeight="120" onKeyPressed="#buttonPressed" promptText="Печатай тут!"/>
+        <Button fx:id="btn1" text="GO" maxWidth="120" minWidth="120" maxHeight="120" minHeight="120" onAction="#sendMsg"/>
+        <!--Button fx:id="btn1" text="GO" maxWidth="80" minWidth="80" maxHeight="80" minHeight="80" onAction="#sendMsg"/-->
+    </HBox>
+</VBox>
