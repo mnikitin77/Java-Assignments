@@ -8,10 +8,34 @@ public class MultithreadingTest {
 
         MultithreadingTest threadTest = new MultithreadingTest();
 
+        System.out.println("Метод 1:");
         threadTest.methodOne();
         System.out.println();
 
+        System.out.println("Метод 2:");
+        System.out.println("2 потока:");
+        threadTest.methodTho(2);
+        System.out.println();
+
+        System.out.println("3 потока:");
         threadTest.methodTho(3);
+        System.out.println();
+
+        System.out.println("4 потока:");
+        threadTest.methodTho(4);
+        System.out.println();
+
+        System.out.println("8 потоков:");
+        threadTest.methodTho(8);
+        System.out.println();
+
+        System.out.println("16 потоков:");
+        threadTest.methodTho(16);
+        System.out.println();
+
+        System.out.println("32 потоков:");
+        threadTest.methodTho(16);
+        System.out.println();
     }
 
     /**
@@ -22,7 +46,6 @@ public class MultithreadingTest {
         float[] array = new float[SIZE];
         initArray(array, 1.0f);
 
-        System.out.println("Метод 1:");
         long startTime = System.currentTimeMillis();
         performCalculations(array);
         long timeSpent = System.currentTimeMillis() - startTime;
@@ -40,7 +63,6 @@ public class MultithreadingTest {
         float[] array = new float[SIZE];
         initArray(array, 1.0f);
 
-        //class ArrayProcessingThread implements Runnable {
         class ArrayProcessingThread extends Thread {
 
             private int sourceArrayStartingIndex;
@@ -59,18 +81,13 @@ public class MultithreadingTest {
 
             @Override
             public void run() {
-//                try {//TODO
-//                    Thread.sleep(10000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-
                 // разбивка массива (копирование части исходного в новый)
                 System.arraycopy(array, sourceArrayStartingIndex,
                         partArray, 0, elementsCount);
-
                 // вычисления
                 performCalculations(partArray);
+                // выполняем склейку имено здесь!
+                updateSourceArray();
             }
 
             /**
@@ -81,8 +98,6 @@ public class MultithreadingTest {
                         sourceArrayStartingIndex, elementsCount);
             }
         }
-
-        System.out.println("Метод 2:");
 
         // Создаём объекты классов для параллельных вычислений
         // в отдельных потоках.
@@ -95,16 +110,13 @@ public class MultithreadingTest {
         // Фиксируем начало измерений
         long startTime = System.currentTimeMillis();
 
-        // Стартуем N - 1 поток и производим вычисления
+        // Стартуем N-1 поток и производим вычисления
         for (int i = 0; i < arrayThreads.length - 1; i++) {
 
             arrayThreads[i] =
                     new ArrayProcessingThread(i * partsSize, partsSize);
             arrayThreads[i].start();
         }
-
-//        arrayThreads[0] = new ArrayProcessingThread(0 * partsSize, partsSize);
-//        arrayThreads[0].start();
 
         // Запускаем последний поток (размер элементов массива может быть
         // меньше, чем partsSize
@@ -114,9 +126,8 @@ public class MultithreadingTest {
                 array.length - (threadsCount - 1) * partsSize);
         arrayThreads[arrayThreads.length - 1].start();
 
-        //TODO Сделать склейку
+        // Ждём окончание всех потоков, прежде чем замерит время
         for (ArrayProcessingThread t: arrayThreads) {
-            t.updateSourceArray();
             try {
                 t.join();
             } catch (InterruptedException e) {
@@ -203,3 +214,27 @@ public class MultithreadingTest {
         return res;
     }
 }
+
+//  Вывод на экран:
+//
+//        Метод 1:
+//        Результат выполнения: 00:00:07.677 [7677 мс]
+//
+//        Метод 2:
+//        2 потока:
+//        Результат выполнения: 00:00:02.268 [2268 мс]
+//
+//        3 потока:
+//        Результат выполнения: 00:00:00.831 [831 мс]
+//
+//        4 потока:
+//        Результат выполнения: 00:00:00.680 [680 мс]
+//
+//        8 потоков:
+//        Результат выполнения: 00:00:00.649 [649 мс]
+//
+//        16 потоков:
+//        Результат выполнения: 00:00:00.671 [671 мс]
+//
+//        32 потоков:
+//        Результат выполнения: 00:00:00.683 [683 мс]
