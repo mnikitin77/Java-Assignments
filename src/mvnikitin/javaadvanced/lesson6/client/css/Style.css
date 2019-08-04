@@ -10,7 +10,7 @@
     /*-fx-background-size: stretch;*/
     /*-fx-background-repeat: repeat;*/
     -fx-background-radius: 20;
-    -fx-background-insets: 10;
+    -fx-background-insets: 15;
     -fx-border-color: purple;
     -fx-border-radius: 20;
     -fx-border-width: 5;
@@ -24,7 +24,7 @@
 
 #textArea {
     -fx-background-color: oldlace;;
-    -fx-background-radius: 20;
+    -fx-background-radius: 25;
     -fx-background-insets: 10;
     -fx-text-fill: #aa154c;
     -fx-font: 12 "Comic Sans MS";
@@ -32,6 +32,7 @@
     -fx-border-radius: 20;
     -fx-border-width: 5;
     -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
 }
 
 .text-area .scroll-pane .scroll-bar {
@@ -47,8 +48,9 @@
 }
 
 #messageTextArea {
-    -fx-background-color: mintcream;
-    -fx-background-radius: 20;
+    /*-fx-background-color: mintcream;*/
+    -fx-background-color: lightcyan;
+    -fx-background-radius: 25;
     -fx-background-insets: 10;
     -fx-text-fill: green;
     -fx-font: 12 "Comic Sans MS";
@@ -56,4 +58,5 @@
     -fx-border-radius: 20;
     -fx-border-width: 5;
     -fx-border-insets: 10;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,1) , 5, 0.0 , 0 , 1 );
 }
