@@ -1,4 +1,4 @@
-package mvnikitin.javaadvanced.lesson6.server;
+package mvnikitin.javaadvanced.lesson7.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class NetChatServer {
-
+    
     private Set<ClientSession> clientSessions;
 
     public NetChatServer() {

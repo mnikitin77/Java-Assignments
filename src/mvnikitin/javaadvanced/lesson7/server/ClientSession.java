@@ -1,4 +1,4 @@
-package mvnikitin.javaadvanced.lesson6.server;
+package mvnikitin.javaadvanced.lesson7.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

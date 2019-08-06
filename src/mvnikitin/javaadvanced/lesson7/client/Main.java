@@ -1,4 +1,4 @@
-package mvnikitin.javaadvanced.lesson6.client;
+package mvnikitin.javaadvanced.lesson7.client;
 
 
 import javafx.application.Application;
