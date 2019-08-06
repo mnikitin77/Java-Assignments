@@ -4,8 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 
-public class ClientSession implements Comparable<ClientSession> {
+public class ClientSession {
 
     private Socket socket;
     private DataOutputStream out;
@@ -13,6 +14,10 @@ public class ClientSession implements Comparable<ClientSession> {
     private NetChatServer server;
 
     private String user;
+
+    public String getUser() {
+        return user;
+    }
 
     public ClientSession(NetChatServer server, Socket socket) {
         try {
@@ -22,34 +27,69 @@ public class ClientSession implements Comparable<ClientSession> {
             out = new DataOutputStream(socket.getOutputStream());
 
             user = "";
-            ClientSession me = this;
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         while (true) {
+                            String firstMessage = in.readUTF();
+                            if (firstMessage.startsWith("/auth")) {
+                                String[] tokens = firstMessage.split(" ");
+                                String newNick =
+                                        AuthService.getNickByLoginAndPass(
+                                                tokens[1], tokens[2]);
+
+                                if (newNick == null) {
+                                    sendMessage("Неверный логин/пароль!");
+                                } else if (server.isOnline(newNick)) {
+                                    sendMessage("Вы уже присоединись к чату.");
+                                }
+                                else {
+                                    user = newNick;
+
+                                    sendMessage("/authok");
+                                    server.openClientSession(ClientSession.this);
+
+                                    System.out.println("User " + user +
+                                            " connected.");
+                                    break;
+                                }
+                            }
+                        }
+
+                        while (true) {
                             String messageReceived = in.readUTF();
 
-                            if (messageReceived.startsWith("/user:") &&
-                                    user.equals("")) {
-                                user = messageReceived.substring(
-                                        "/user:".length());
-                                System.out.println("User " + user +
-                                        " connected.");
-                            } else if (messageReceived.equals("/end")) {
+                            if (messageReceived.equals("/end")) {
                                 out.writeUTF("/serverClosed");
                                 System.out.println("User " + user +
                                         " disconnected.");
-                                server.releaseClientSession(me);
                                 break;
+                            }
+
+                            if (messageReceived.startsWith("/w")) {
+                                String[] privateMessagetokens =
+                                        messageReceived.split(" ", 3);
+                                String message = user + " to " +
+                                        privateMessagetokens[1] + ": " +
+                                        privateMessagetokens[2];
+
+                                // ему
+                                server.privateMessage(
+                                        message, privateMessagetokens[1]);
+
+                                // себе
+                                sendMessage(message);
+
                             } else {
-                                System.out.println(user + " " + messageReceived);
                                 server.broadcastMessage(user + ": " +
                                         messageReceived);
                             }
                         }
                     } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (SQLException e) {
                         e.printStackTrace();
                     } finally {
                         try {
@@ -67,6 +107,8 @@ public class ClientSession implements Comparable<ClientSession> {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                        server.closeClientSession(ClientSession.this);
                     }
                 }
             }).start();
@@ -82,10 +124,5 @@ public class ClientSession implements Comparable<ClientSession> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public int compareTo(ClientSession other) {
-        return hashCode() - other.hashCode();
     }
 }
