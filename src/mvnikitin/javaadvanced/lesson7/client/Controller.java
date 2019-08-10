@@ -144,7 +144,7 @@ public class Controller {
 
     @FXML
     public void disconnect() {
-        if(socket != null) {
+        if(out != null) {
             try {
                 out.writeUTF("/end");
             } catch (IOException e) {

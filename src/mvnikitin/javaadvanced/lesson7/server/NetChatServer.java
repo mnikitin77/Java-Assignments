@@ -28,9 +28,8 @@ public class NetChatServer {
         Socket socket = null;
 
         try {
-            AuthService.connect();
-//            String test = AuthService.getNickByLoginAndPass("lelik69", "Qwerty123");
-//            System.out.println(test);
+            DataService.connect("org.sqlite.JDBC",
+                    "jdbc:sqlite:src\\mvnikitin\\javaadvanced\\netchatusers");
 
             server = new ServerSocket(10050);
             System.out.println("Сервер запущен!");
@@ -54,7 +53,7 @@ public class NetChatServer {
                 e.printStackTrace();
             }
 
-            AuthService.disconnect();
+            DataService.disconnect();
         }
     };
 

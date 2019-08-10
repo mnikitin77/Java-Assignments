@@ -32,60 +32,54 @@ public class ClientSession {
                 @Override
                 public void run() {
                     try {
+                        // Цикл обработки начальных команд чата.
                         while (true) {
                             String firstMessage = in.readUTF();
-                            if (firstMessage.startsWith("/auth")) {
-                                String[] tokens = firstMessage.split(" ");
-                                String newNick =
-                                        AuthService.getNickByLoginAndPass(
-                                                tokens[1], tokens[2]);
+                            String[] commandString =
+                                    firstMessage.split(" ", 2);
 
-                                if (newNick == null) {
-                                    sendMessage("Неверный логин/пароль!");
-                                } else if (server.isOnline(newNick)) {
-                                    sendMessage("Вы уже присоединись к чату.");
-                                }
-                                else {
-                                    user = newNick;
+                            boolean isAuthenticated = false;
 
-                                    sendMessage("/authok");
-                                    server.openClientSession(ClientSession.this);
-
-                                    System.out.println("User " + user +
-                                            " connected.");
+                            switch (commandString[0]) {
+                                case "/auth":
+                                    isAuthenticated =
+                                            authenticate(firstMessage);
                                     break;
-                                }
+                                case "/reg"://TODO
+                                    break;
+                                    default:
+                                        sendMessage("Incorrect command.");
                             }
+
+                            if(isAuthenticated)
+                                break;
                         }
 
+                        // Цикл обработки сообщений чата.
                         while (true) {
                             String messageReceived = in.readUTF();
+                            String[] commandString =
+                                    messageReceived.split(" ", 2);
 
-                            if (messageReceived.equals("/end")) {
-                                out.writeUTF("/serverClosed");
-                                System.out.println("User " + user +
-                                        " disconnected.");
+                            boolean isLogedOff = false;
+
+                            switch (commandString[0]) {
+                                case "/end":
+                                    isLogedOff = true;
+                                    out.writeUTF("/serverClosed");
+                                    System.out.println("User " + user +
+                                            " disconnected.");
+                                    break;
+                                case "/w":
+                                    sendPrivateMessage(messageReceived);
+                                    break;
+                                default:
+                                    server.broadcastMessage(user + ": " +
+                                            messageReceived);
+                            }
+
+                            if(isLogedOff)
                                 break;
-                            }
-
-                            if (messageReceived.startsWith("/w")) {
-                                String[] privateMessagetokens =
-                                        messageReceived.split(" ", 3);
-                                String message = user + " to " +
-                                        privateMessagetokens[1] + ": " +
-                                        privateMessagetokens[2];
-
-                                // ему
-                                server.privateMessage(
-                                        message, privateMessagetokens[1]);
-
-                                // себе
-                                sendMessage(message);
-
-                            } else {
-                                server.broadcastMessage(user + ": " +
-                                        messageReceived);
-                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -125,4 +119,57 @@ public class ClientSession {
             e.printStackTrace();
         }
     }
+
+
+    private boolean authenticate(String message) throws SQLException {
+
+        boolean res = false;
+
+        if (message.startsWith("/auth")) {
+            String[] tokens = message.split(" ");
+            String newNick =
+                    AuthService.getNickByLoginAndPass(
+                            tokens[1], tokens[2]);
+
+            if (newNick == null) {
+                sendMessage("Wrong username or password.");
+            } else if (server.isOnline(newNick)) {
+                sendMessage("You are already in the chat.");
+            }
+            else {
+                user = newNick;
+                res = true;
+
+                sendMessage("/authok");
+                server.openClientSession(ClientSession.this);
+
+                System.out.println("User " + user +
+                        " connected.");
+            }
+        }
+
+        return res;
+    }
+
+
+    private void sendPrivateMessage(String message) {
+
+            String[] privateMessagetokens =
+                    message.split(" ", 3);
+            String messageText = user + " to " +
+                    privateMessagetokens[1] + ": " +
+                    privateMessagetokens[2];
+
+            // ему
+            if (server.privateMessage(
+                    messageText, privateMessagetokens[1])) {
+                // себе
+                sendMessage(messageText);
+            } else {
+                sendMessage("User " +
+                        privateMessagetokens[1] +
+                        " is not in the chat");
+            }
+    }
+
 }
