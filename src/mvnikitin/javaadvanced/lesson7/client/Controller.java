@@ -1,6 +1,7 @@
 package mvnikitin.javaadvanced.lesson7.client;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
@@ -12,9 +13,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 
-public class Controller {
+public class Controller implements Initializable {
     @FXML
     TextArea textArea;
 
@@ -24,10 +27,6 @@ public class Controller {
     @FXML
     Button btn1;
 
-    Socket socket;
-    DataInputStream in;
-    DataOutputStream out;
-
     @FXML
     HBox bottomPanel;
 
@@ -35,15 +34,41 @@ public class Controller {
     HBox upperPanel;
 
     @FXML
+    HBox regPanel;
+
+    @FXML
     TextField loginfield;
 
     @FXML
     PasswordField passwordfiled;
 
+    @FXML
+    TextField regnick;
+
+    @FXML
+    TextField reglogin;
+
+    @FXML
+    PasswordField regpwd1;
+
+    @FXML
+    PasswordField regpwd2;
+
+    @FXML
+    Button regbtn;
+
+    @FXML
+    Button backbtn;
+
+
     private boolean isAuthorized;
 
     final String IP_ADRESS = "localhost";
     final int PORT = 10050;
+
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
 
     public void setAuthorized(boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
@@ -128,6 +153,7 @@ public class Controller {
         }
     }
 
+    @FXML
     public void authorize() {
         if (socket == null || socket.isClosed()) {
             connect();
@@ -151,5 +177,33 @@ public class Controller {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        hideRegPanel();
+    }
+
+    @FXML
+    public void showRegPanel() {
+        upperPanel.setVisible(false);
+        upperPanel.setManaged(false);
+        regPanel.setVisible(true);
+        regPanel.setManaged(true);
+    }
+
+    @FXML
+    public void hideRegPanel() {
+        regPanel.setVisible(false);
+        regPanel.setManaged(false);
+        upperPanel.setVisible(true);
+        upperPanel.setManaged(true);
+
+        regnick.clear();
+        reglogin.clear();
+        regpwd1.clear();
+        regpwd2.clear();
+
+        loginfield.requestFocus();
     }
 }
