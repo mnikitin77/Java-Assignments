@@ -57,18 +57,23 @@ public class NetChatServer {
         }
     };
 
-    public void broadcastMessage(String message) {
+    public void broadcastMessage(String message, String userFrom) {
         for (ClientSession c: clientSessions.values()) {
-            c.sendMessage(message);
+            if (!c.checkInBlackList(userFrom)) {
+                c.sendMessage(message);
+            }
         }
     }
 
-    public boolean privateMessage (String message, String user) {
+    public boolean privateMessage (
+            String message, String userTo, String userFrom) {
         boolean res = false;
 
-        ClientSession c = clientSessions.get(user);
+        ClientSession c = clientSessions.get(userTo);
         if (c != null) {
-            c.sendMessage(message);
+            if(!c.checkInBlackList(userFrom)) {
+                c.sendMessage(message);
+            }
             res = true;
         }
 

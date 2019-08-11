@@ -21,8 +21,9 @@ public class DataService {
         return stmt.executeQuery(query);
     }
 
-    public static void executeStatement(String statement) throws SQLException {
-        stmt.executeQuery(statement);
+    public static int executeStatement(String statement) throws SQLException {
+        stmt.execute(statement);
+        return stmt.getUpdateCount();
     }
 
     public static void disconnect() {

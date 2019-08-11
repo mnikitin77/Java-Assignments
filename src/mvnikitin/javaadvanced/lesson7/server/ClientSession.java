@@ -15,8 +15,14 @@ public class ClientSession {
 
     private String user;
 
+    private BlackList blackList;
+
     public String getUser() {
         return user;
+    }
+
+    public boolean checkInBlackList(String nick) {
+        return blackList.isInBlackList(nick);
     }
 
     public ClientSession(NetChatServer server, Socket socket) {
@@ -27,6 +33,7 @@ public class ClientSession {
             out = new DataOutputStream(socket.getOutputStream());
 
             user = "";
+            blackList = null;
 
             new Thread(new Runnable() {
                 @Override
@@ -51,8 +58,10 @@ public class ClientSession {
                                         sendMessage("Incorrect command.");
                             }
 
-                            if(isAuthenticated)
+                            if(isAuthenticated) {
+                                blackList = new BlackList(user);
                                 break;
+                            }
                         }
 
                         // Цикл обработки сообщений чата.
@@ -73,9 +82,15 @@ public class ClientSession {
                                 case "/w":
                                     sendPrivateMessage(messageReceived);
                                     break;
+                                case "/block":
+                                    addToBlackList(messageReceived);
+                                    break;
+                                case "/unblock":
+                                    removeFromBlackList(messageReceived);
+                                    break;
                                 default:
                                     server.broadcastMessage(user + ": " +
-                                            messageReceived);
+                                            messageReceived, user);
                             }
 
                             if(isLogedOff)
@@ -154,22 +169,50 @@ public class ClientSession {
 
     private void sendPrivateMessage(String message) {
 
-            String[] privateMessagetokens =
+            String[] tokens =
                     message.split(" ", 3);
             String messageText = user + " to " +
-                    privateMessagetokens[1] + ": " +
-                    privateMessagetokens[2];
+                    tokens[1] + ": " +
+                    tokens[2];
 
             // ему
             if (server.privateMessage(
-                    messageText, privateMessagetokens[1])) {
+                    messageText, tokens[1], user)) {
                 // себе
                 sendMessage(messageText);
             } else {
                 sendMessage("User " +
-                        privateMessagetokens[1] +
-                        " is not in the chat");
+                        tokens[1] +
+                        " is not in the chat.");
             }
     }
 
+    private void addToBlackList(String message) {
+        String[] tokens =
+                message.split(" ", 2);
+
+        if(blackList.isInBlackList(tokens[1])) {
+            sendMessage(tokens[1] + " is already in the blacklist." );
+            return;
+        }
+
+        if (blackList.addToBlackList(tokens[1])) {
+            sendMessage(tokens[1] + " successfully added to the blacklist." );
+        } else {
+            sendMessage("Failed to add " + tokens[1] + " to the blacklist." );
+        }
+    }
+
+    private void removeFromBlackList(String message) {
+        String[] tokens =
+                message.split(" ", 2);
+
+        if (blackList.removeFromBlackList(tokens[1])) {
+            sendMessage(tokens[1] +
+                    " successfully removed from the blacklist.");
+        } else {
+            sendMessage("Failed to remove " +
+                    tokens[1] + " from the blacklist.");
+        }
+    }
 }
