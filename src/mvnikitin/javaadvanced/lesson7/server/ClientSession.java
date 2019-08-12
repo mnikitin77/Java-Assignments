@@ -52,7 +52,8 @@ public class ClientSession {
                                     isAuthenticated =
                                             authenticate(firstMessage);
                                     break;
-                                case "/reg"://TODO
+                                case "/reg":
+                                    register(firstMessage);
                                     break;
                                     default:
                                         sendMessage("Incorrect command.");
@@ -140,51 +141,63 @@ public class ClientSession {
 
         boolean res = false;
 
-        if (message.startsWith("/auth")) {
-            String[] tokens = message.split(" ");
-            String newNick =
-                    AuthService.getNickByLoginAndPass(
-                            tokens[1], tokens[2]);
+        String[] tokens = message.split(" ");
+        String newNick =
+                AuthService.getNickByLoginAndPass(
+                        tokens[1], tokens[2]);
 
-            if (newNick == null) {
-                sendMessage("Wrong username or password.");
-            } else if (server.isOnline(newNick)) {
-                sendMessage("You are already in the chat.");
-            }
-            else {
-                user = newNick;
-                res = true;
+        if (newNick == null) {
+            sendMessage("Wrong username or password.");
+        } else if (server.isOnline(newNick)) {
+            sendMessage("You are already in the chat.");
+        }
+        else {
+            user = newNick;
+            res = true;
 
-                sendMessage("/authok");
-                server.openClientSession(ClientSession.this);
+            sendMessage("/authok");
+            server.openClientSession(ClientSession.this);
 
-                System.out.println("User " + user +
-                        " connected.");
-            }
+            System.out.println("User " + user +
+                    " connected.");
         }
 
         return res;
     }
 
+    private void register(String message) throws SQLException {
+
+        String[] tokens = message.split(" ");
+
+        if (RegService.register(tokens[1], tokens[2], tokens[3])) {
+            sendMessage(tokens[1] + " (username " + tokens[2] +
+                    ") successfully resistered.\n" +
+                    "Welcome to the chat!");
+        } else {
+            sendMessage("The user with nick '" + tokens[1] + "' and/or username '" + tokens[2] +
+                    "' was registered before.\n" +
+                    "Please choose other nick and/or username");
+        }
+    }
 
     private void sendPrivateMessage(String message) {
 
-            String[] tokens =
-                    message.split(" ", 3);
-            String messageText = user + " to " +
-                    tokens[1] + ": " +
-                    tokens[2];
+        String[] tokens =
+                message.split(" ", 3);
+        String messageText = user + " to " +
+                tokens[1] + ": " +
+                tokens[2];
 
-            // ему
-            if (server.privateMessage(
-                    messageText, tokens[1], user)) {
-                // себе
-                sendMessage(messageText);
-            } else {
-                sendMessage("User " +
-                        tokens[1] +
-                        " is not in the chat.");
-            }
+        // ему
+        if (server.privateMessage(
+                messageText, tokens[1], user)) {
+            // себе
+            sendMessage(messageText);
+        } else {
+            sendMessage("User " +
+                    tokens[1] +
+                    " is not in the chat.");
+        }
     }
 
     private void addToBlackList(String message) {

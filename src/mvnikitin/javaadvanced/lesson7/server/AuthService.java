@@ -5,9 +5,12 @@ import java.sql.SQLException;
 
 public class AuthService {
 
-    public static String getNickByLoginAndPass(String login, String pass) throws SQLException {
+    public static String getNickByLoginAndPass(String login, String password)
+            throws SQLException {
 
-        String query = String.format("SELECT nick FROM users where username = '%s' and password = '%s'", login, pass);
+        String query = String.format(
+                "SELECT nick FROM users where username = '%s' and password = '%d'",
+                login, password.hashCode());
         ResultSet rs = DataService.getData(query);
 
         if (rs.next()) {

@@ -30,7 +30,7 @@
             <PasswordField promptText="repeat password" fx:id="regpwd2"/>
         </VBox>
         <VBox alignment="TOP_RIGHT" >
-            <Button text="REGISTER" onAction="#authorize" fx:id="regbtn" maxWidth="120" minWidth="120" maxHeight="60" minHeight="60"/>
+            <Button text="REGISTER" onAction="#regster" fx:id="regbtn" maxWidth="120" minWidth="120" maxHeight="60" minHeight="60"/>
             <Button text="BACK" onAction="#hideRegPanel" fx:id="backbtn" maxWidth="120" minWidth="120" maxHeight="60" minHeight="60"/>
         </VBox>
     </HBox>

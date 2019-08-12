@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Controller implements Initializable {
@@ -179,6 +181,24 @@ public class Controller implements Initializable {
         }
     }
 
+    @FXML
+    public void regster() {
+        if (socket == null || socket.isClosed()) {
+            connect();
+        }
+
+        if (checkRegForm()) {
+            try {
+
+                out.writeUTF("/reg " + regnick.getText() + " " +
+                        reglogin.getText() + " " + regpwd2.getText());
+                hideRegPanel();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         hideRegPanel();
@@ -205,5 +225,38 @@ public class Controller implements Initializable {
         regpwd2.clear();
 
         loginfield.requestFocus();
+    }
+
+    private boolean checkRegForm () {
+        boolean res = false;
+
+        if (regnick.getText().isEmpty())
+            textArea.appendText("Please fill in the nickname.\n");
+        else if (reglogin.getText().isEmpty())
+            textArea.appendText("Please fill in the username.\n");
+        else if (regpwd1.getText().isEmpty())
+            textArea.appendText("Please fill in the password.\n");
+        else if (regpwd2.getText().isEmpty())
+            textArea.appendText("Please repeat the password.\n");
+        else if (!regpwd1.getText().equals(regpwd2.getText()))
+            textArea.appendText("Please fill in the same password two times.\n");
+        else if (!checkPasswordStrengh(regpwd2.getText())) {
+            textArea.appendText("The password is weak. " +
+                    "A password must contain at least one capital [A-Z], " +
+                    "one digit [0-9], one small letter [a-z], " +
+                    "one special symbol [@#$%^&+=]. " +
+                    "It also must have at least 8 symbols but not more that 20.\n");
+        } else res = true;
+
+        return res;
+    }
+
+    private boolean checkPasswordStrengh(String s){
+        Pattern p = Pattern.compile("(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}");
+        Matcher m = p.matcher(s);
+        if(m.matches()){
+            return true;
+        }
+        return false;
     }
 }
