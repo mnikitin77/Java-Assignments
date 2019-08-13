@@ -1,4 +1,4 @@
-package mvnikitin.javaadvanced.lesson8.server;
+package mvnikitin.javaadvanced.lesson7.server;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
