@@ -2,6 +2,7 @@ package mvnikitin.javaadvanced.lesson7.client;
 
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +17,6 @@ public class Main extends Application {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("NetChat.fxml"));
         Parent root = loader.load();
-        //Parent root = FXMLLoader.load(getClass().getResource("NetChat.fxml"));
         primaryStage.setTitle("-~=* Super Chat *=~-");
         primaryStage.setScene(new Scene(root, 640, 720));
 
@@ -24,6 +24,8 @@ public class Main extends Application {
             @Override
             public void handle(WindowEvent event) {
                 ((Controller)loader.getController()).disconnect();
+                Platform.exit();
+                System.exit(0);
             }
         });
 

@@ -28,9 +28,8 @@ public class NetChatServer {
         Socket socket = null;
 
         try {
-            AuthService.connect();
-//            String test = AuthService.getNickByLoginAndPass("lelik69", "Qwerty123");
-//            System.out.println(test);
+            DataService.connect("org.sqlite.JDBC",
+                    "jdbc:sqlite:src\\mvnikitin\\javaadvanced\\netchatusers");
 
             server = new ServerSocket(10050);
             System.out.println("Сервер запущен!");
@@ -54,22 +53,27 @@ public class NetChatServer {
                 e.printStackTrace();
             }
 
-            AuthService.disconnect();
+            DataService.disconnect();
         }
     };
 
-    public void broadcastMessage(String message) {
+    public void broadcastMessage(String message, String userFrom) {
         for (ClientSession c: clientSessions.values()) {
-            c.sendMessage(message);
+            if (!c.checkInBlackList(userFrom)) {
+                c.sendMessage(message);
+            }
         }
     }
 
-    public boolean privateMessage (String message, String user) {
+    public boolean privateMessage (
+            String message, String userTo, String userFrom) {
         boolean res = false;
 
-        ClientSession c = clientSessions.get(user);
+        ClientSession c = clientSessions.get(userTo);
         if (c != null) {
-            c.sendMessage(message);
+            if(!c.checkInBlackList(userFrom)) {
+                c.sendMessage(message);
+            }
             res = true;
         }
 
