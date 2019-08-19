@@ -1,4 +1,4 @@
-package mvnikitin.javaadvanced.lesson7.client;
+package mvnikitin.javaadvanced.lesson8.client;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

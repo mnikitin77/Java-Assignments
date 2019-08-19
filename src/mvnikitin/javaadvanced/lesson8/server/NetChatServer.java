@@ -1,4 +1,4 @@
-package mvnikitin.javaadvanced.lesson7.server;
+package mvnikitin.javaadvanced.lesson8.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;

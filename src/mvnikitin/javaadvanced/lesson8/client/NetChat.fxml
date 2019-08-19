@@ -9,7 +9,7 @@
 
 
 
-<VBox fx:controller="mvnikitin.javaadvanced.lesson7.client.Controller"
+<VBox fx:controller="mvnikitin.javaadvanced.lesson8.client.Controller"
       xmlns:fx="http://javafx.com/fxml" alignment="center">
     <stylesheets><URL value="@css/Style.css"/></stylesheets>
     <HBox fx:id="upperPanel" alignment="CENTER">
